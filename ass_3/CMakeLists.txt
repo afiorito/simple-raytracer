@@ -8,6 +8,12 @@ set(SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src)
 # Executable definition and properties
 add_executable(${PROJECT_NAME} 
     ${SRC_DIR}/main.cpp
+    ${SRC_DIR}/SceneReader.cpp
+    ${SRC_DIR}/Scene.cpp
+    ${SRC_DIR}/Light.cpp
+    ${SRC_DIR}/Sphere.cpp
+    ${SRC_DIR}/Plane.cpp
+    ${SRC_DIR}/Ray.cpp
 )
 
 target_include_directories(${PROJECT_NAME} 
