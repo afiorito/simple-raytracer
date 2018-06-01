@@ -12,7 +12,7 @@ struct Plane: SceneObject {
     vec3 normal;
 
     vec3 normalAt(const vec3&) const;
-    vec3 intersection(const Ray&) const;
+    float intersection(const Ray&) const;
 };
 
 #endif

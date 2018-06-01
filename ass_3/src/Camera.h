@@ -7,6 +7,10 @@
 using glm::vec3;
 
 struct Camera {
+    const vec3 kDIRECTION = vec3(0.0f, 0.0f, -1.0f);
+    const vec3 kDOWN = vec3(0.0f, -1.0f, 0.0f);
+    const vec3 kRIGHT = vec3(1.0f, 0.0f, 0.0f);
+
     vec3 position;  
     float fov;
     float focal_length;

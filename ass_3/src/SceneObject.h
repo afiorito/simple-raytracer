@@ -15,7 +15,7 @@ struct SceneObject {
     virtual ~SceneObject() {}
 
     virtual vec3 normalAt(const vec3&) const = 0;
-    virtual vec3 intersection(const Ray& ray) const = 0;
+    virtual float intersection(const Ray& ray) const = 0;
 };
 
 #endif

@@ -17,6 +17,9 @@ struct Scene {
     Scene();
     ~Scene();
 
+    int height() const;
+    int width() const;
+
 };
 
 #endif

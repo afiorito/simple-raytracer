@@ -13,7 +13,7 @@ struct Sphere: SceneObject {
     float radius;
 
     vec3 normalAt(const vec3&) const;
-    vec3 intersection(const Ray&) const;
+    float intersection(const Ray&) const;
 };
 
 #endif
