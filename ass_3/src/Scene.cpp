@@ -9,9 +9,9 @@ Scene::~Scene() {
 }
 
 int Scene::width() const {
-        return 2 * camera.focal_length * glm::tan(glm::radians(camera.fov / 2));
+        return height() * camera.aspect_ratio;
     }
 
 int Scene::height() const {
-    return width() / camera.aspect_ratio;
+    return 2 * camera.focal_length * glm::tan(glm::radians(camera.fov / 2));
 }

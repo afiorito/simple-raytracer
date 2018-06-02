@@ -9,48 +9,44 @@ using std::endl;
 using glm::vec3;
 using cimg_library::CImg;
 using cimg_library::CImgDisplay;
+// #define DISPLAY
+
+struct Intersection {
+    float t;
+    SceneObject_s closest;
+
+    Intersection(float t, SceneObject_s closest): t(t), closest(closest) {}
+};
 
 void render(CImg<float>&, const Scene&);
-vec3 color(const Ray&, const SceneObject_s);
+const Intersection intersect(const Ray&, const vector<SceneObject_s>&);
+vec3 color(const Ray&, const Intersection&, const Scene&);
 vec3 backgroundColor(const Ray&);
 
-int main() {
+int main(int argc, char* argv[]) {
+
+    std::string scene_name = "scene1";
+
+    if (argc > 1)
+        scene_name = argv[1];
 
     Scene scene;
     SceneReader reader;
-    reader.loadScene(scene, appendToSourcePath("/resources/scenes/scene1.txt"));
-
-    std::cout << "Objects: " << scene.width() << std::endl;
-    std::cout << "Lights: " << scene.height() << std::endl;
+    reader.loadScene(scene, appendToSourcePath("/resources/scenes/" + scene_name + ".txt"));
 
     CImg<float> image(scene.width(), scene.height(), 1, 3, 0);
-
-    cout << scene.objects[1]->position.x << scene.objects[1]->position.y << scene.objects[1]->position.z << endl;
-
     render(image, scene);
 
-    // int x = 200;
-    // int y = 100;
-    
-    // CImg<float> image(x, y, 1, 3, 0);
+    #ifdef DISPLAY
+        CImgDisplay main_disp(image, "COMP 371 - Assignment 3");
 
-    // for (int j = 0; j < y; j++) {
-    //     for (int i = 0; i < x; i++) {
-    //         vec3 color = vec3(float(i) / float(x), float(j) / float(y), 0.2f);
-    //         image.draw_point(i, j, glm::value_ptr(color));
-    //     }
-    // }
-
-    // CImgDisplay main_disp(image, "Hello World!");
-
-    // while(!main_disp.is_closed()) {
-    //     main_disp.wait();
-    // }
+        while(!main_disp.is_closed()) {
+            main_disp.wait();
+        }
+    #endif
 
     image.normalize(0, 255);
-    image.save(appendToSourcePath("/resources/test.bmp").c_str());
-
-    // std::cout << "Writing Complete!" << std::endl;
+    image.save(appendToSourcePath("/resources/" + scene_name + ".bmp").c_str());
 
     return 0;
 }
@@ -66,27 +62,65 @@ void render(CImg<float>& image, const Scene& scene) {
             float xCoord = float(x) / float(scene.width());
             float yCoord = float(y) / float(scene.height());
 
-            Ray r(camera.position, top_right + (xCoord * camera.kRIGHT * width) + (yCoord * camera.kDOWN * height));
-            vec3 c = color(r, scene.objects[1]);
+            Ray ray(camera.position, top_right + (xCoord * camera.kRIGHT * width) + (yCoord * camera.kDOWN * height));
+
+            const vec3 c = color(ray, intersect(ray, scene.objects), scene);
+
             image.draw_point(x, y, glm::value_ptr(c));
         }
     }
 }
 
-vec3 color(const Ray& ray, const SceneObject_s object) {
-    float t = object->intersection(ray);
-    if (t > 0.0f) {
-        vec3 normal = object->normalAt(ray.pointAt(t));
-
-        return 0.5f * vec3(normal.x + 1, normal.y + 1, normal.z + 1);
+const Intersection intersect(const Ray& ray, const vector<SceneObject_s>& objects) {
+    float minimum = std::numeric_limits<float>::max();
+    SceneObject_s closest;
+    for (const SceneObject_s object : objects) {
+        float t = object->intersection(ray);
+        if (t > 0.0f && t < minimum) {
+            minimum = t;
+            closest = object;
+        }
     }
 
+    return Intersection(minimum, closest);
+}
+
+vec3 color(const Ray& ray, const Intersection& i, const Scene& scene) {
+    // if there was an intersection, return object color
+    if (i.closest != nullptr) {
+        vec3 color = i.closest->ambient;
+        vec3 ipoint = ray.pointAt(i.t);
+        vec3 normal = glm::normalize(i.closest->normalAt(ray.pointAt(i.t)));
+
+        for (const Light& light : scene.lights) {
+            vec3 light_dir = glm::normalize(light.position - ipoint);
+            // fix shadow acne: https://stackoverflow.com/questions/23417736/ray-tracing-noise
+            Ray s(ipoint + light_dir * 0.05f, light_dir);
+
+            // if there was no intersection, object is lit
+            if (intersect(s, scene.objects).closest == nullptr) {
+                float diffuse_light = glm::max(glm::dot(normal, light_dir), 0.0f);
+                
+                vec3 reflect_dir = glm::max(glm::reflect(-light_dir, normal), 0.0f);
+                float specular_light = glm::pow(glm::max(glm::dot(-ray.direction, reflect_dir), 0.0f), i.closest->shininess);
+
+                vec3 diffuse = diffuse_light * i.closest->diffuse;
+                vec3 specular = specular_light * i.closest->specular;
+
+                color += (diffuse + specular) * light.color;
+            }
+        }
+
+        return glm::clamp(color, 0.0f, 1.0f);
+    }
+
+    // if there was no intersection, return background color
     return backgroundColor(ray);
 }
 
 vec3 backgroundColor(const Ray& ray) {
     // normalize t between [0, 1]
-    float t = 0.5 * (ray.direction.y + 1.0f);
-
-    return (1.0f - t) * vec3(1.0f) + t * rgb(255.0f, 154.0f, 158.0f);
+    // float t = 0.5 * (ray.direction.y + 1.0f);
+    // return (1.0f - t) * vec3(1.0f) + t * rgb(255.0f, 154.0f, 158.0f);
+    return vec3(0.0f, 0.0f, 0.0f);
 }
