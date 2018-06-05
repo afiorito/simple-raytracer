@@ -25,7 +25,7 @@ vec3 backgroundColor(const Ray&);
 
 int main(int argc, char* argv[]) {
 
-    std::string scene_name = "scene1";
+    std::string scene_name = "scene5";
 
     if (argc > 1)
         scene_name = argv[1];
@@ -90,7 +90,7 @@ vec3 color(const Ray& ray, const Intersection& i, const Scene& scene) {
     if (i.closest != nullptr) {
         vec3 color = i.closest->ambient;
         vec3 ipoint = ray.pointAt(i.t);
-        vec3 normal = glm::normalize(i.closest->normalAt(ray.pointAt(i.t)));
+        vec3 normal = glm::normalize(i.closest->normalAt(ipoint));
 
         for (const Light& light : scene.lights) {
             vec3 light_dir = glm::normalize(light.position - ipoint);
@@ -101,7 +101,7 @@ vec3 color(const Ray& ray, const Intersection& i, const Scene& scene) {
             if (intersect(s, scene.objects).closest == nullptr) {
                 float diffuse_light = glm::max(glm::dot(normal, light_dir), 0.0f);
                 
-                vec3 reflect_dir = glm::max(glm::reflect(-light_dir, normal), 0.0f);
+                vec3 reflect_dir = glm::reflect(-light_dir, normal);
                 float specular_light = glm::pow(glm::max(glm::dot(-ray.direction, reflect_dir), 0.0f), i.closest->shininess);
 
                 vec3 diffuse = diffuse_light * i.closest->diffuse;
