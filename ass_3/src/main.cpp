@@ -102,7 +102,7 @@ vec3 color(const Ray& ray, const Intersection& i, const Scene& scene) {
             float distance = glm::distance(light.position, s.pointAt(i.t));
 
             // if there was no intersection, object is lit
-            if (isect.closest == nullptr || i.t > distance) {
+            if (isect.closest == nullptr) {
                 float diffuse_light = glm::max(glm::dot(normal, light_dir), 0.0f);
                 
                 vec3 reflect_dir = glm::reflect(-light_dir, normal);
