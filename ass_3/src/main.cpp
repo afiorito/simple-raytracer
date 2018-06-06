@@ -55,14 +55,14 @@ void render(CImg<float>& image, const Scene& scene) {
     // draw image from left -> right, top -> bottom
     Camera camera = scene.camera;
     float width = (float)scene.width(), height = (float)scene.height();
-    vec3 top_right = vec3(-width / 2, height / 2, -camera.focal_length);
+    vec3 top_left = vec3(-width / 2, height / 2, -camera.focal_length);
 
     for (int y = 0; y < scene.height(); y++) {
         for (int x = 0; x < scene.width(); x++) {
-            float xCoord = float(x) / float(scene.width());
-            float yCoord = float(y) / float(scene.height());
+            float xCoord = float(x) / width;
+            float yCoord = float(y) / height;
 
-            Ray ray(camera.position, top_right + (xCoord * camera.kRIGHT * width) + (yCoord * camera.kDOWN * height));
+            Ray ray(camera.position, top_left + (xCoord * camera.kRIGHT * width) + (yCoord * camera.kDOWN * height));
 
             const vec3 c = color(ray, intersect(ray, scene.objects), scene);
 
@@ -102,7 +102,7 @@ vec3 color(const Ray& ray, const Intersection& i, const Scene& scene) {
             float distance = glm::distance(light.position, s.pointAt(i.t));
 
             // if there was no intersection, object is lit
-            if (isect.closest == nullptr) {
+            if (isect.closest == nullptr ) {
                 float diffuse_light = glm::max(glm::dot(normal, light_dir), 0.0f);
                 
                 vec3 reflect_dir = glm::reflect(-light_dir, normal);
