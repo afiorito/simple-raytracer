@@ -76,7 +76,7 @@ const Intersection intersect(const Ray& ray, const vector<SceneObject_s>& object
     SceneObject_s closest;
     for (const SceneObject_s object : objects) {
         float t = object->intersection(ray);
-        if (t > 0.00001f && t < minimum) {
+        if (t > 0.01f && t < minimum) {
             minimum = t;
             closest = object;
         }
@@ -94,15 +94,14 @@ vec3 color(const Ray& ray, const Intersection& i, const Scene& scene) {
 
         for (const Light& light : scene.lights) {
             vec3 light_dir = glm::normalize(light.position - ipoint);
-            // fix shadow acne: https://stackoverflow.com/questions/23417736/ray-tracing-noise
-            Ray s(ipoint + light_dir * 0.05f, light_dir);
+            Ray s(ipoint, light_dir);
 
-            Intersection isect = intersect(s, scene.objects);
-
-            float distance = glm::distance(light.position, s.pointAt(i.t));
+            const Intersection isect = intersect(s, scene.objects);
+            float light_dist = glm::distance(light.position, ipoint);
+            float block_dist = glm::distance(s.pointAt(isect.t), ipoint);
 
             // if there was no intersection, object is lit
-            if (isect.closest == nullptr ) {
+            if (isect.closest == nullptr || block_dist > light_dist) {
                 float diffuse_light = glm::max(glm::dot(normal, light_dir), 0.0f);
                 
                 vec3 reflect_dir = glm::reflect(-light_dir, normal);

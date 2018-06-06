@@ -21,8 +21,9 @@ float Sphere::intersection(const Ray& ray) const {
 
     if (discriminant < 0) return -1.0f;
 
-    float sol = (-b - glm::sqrt(discriminant)) / (2 * a);
+    float t0 = (-b - glm::sqrt(discriminant)) / (2 * a);
+    float t1 = (-b + glm::sqrt(discriminant)) / (2 * a);
 
-    return sol > 0 ? sol : (-b + glm::sqrt(discriminant)) / (2 * a);
+    return glm::min(t0, t1);
 
 }
