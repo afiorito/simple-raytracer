@@ -45,6 +45,7 @@
     "istream": "cpp",
     "iosfwd": "cpp",
     "iostream": "cpp",
-    "cfenv": "cpp"
+    "cfenv": "cpp",
+    "__locale": "cpp"
   }
 }

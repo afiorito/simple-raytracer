@@ -10,6 +10,8 @@ vec3 Sphere::normalAt(const vec3& point) const {
     return normal;
 }
 
+/// Compute an intersection for a sphere with formula:
+/// x² + y² + z² = r²
 float Sphere::intersection(const Ray& ray) const {
     vec3 rc = ray.origin - position;
     

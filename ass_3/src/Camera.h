@@ -7,6 +7,7 @@
 using glm::vec3;
 
 struct Camera {
+    // Camera orientation vectors
     const vec3 kDIRECTION = vec3(0.0f, 0.0f, -1.0f);
     const vec3 kDOWN = vec3(0.0f, -1.0f, 0.0f);
     const vec3 kRIGHT = vec3(1.0f, 0.0f, 0.0f);

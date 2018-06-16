@@ -3,6 +3,7 @@
 SceneReader::SceneReader() {}
 SceneReader::~SceneReader() {}
 
+/// Load a raytracing scene from file
 void SceneReader::loadScene(Scene& scene, const string& filepath) const {
     std::ifstream file(filepath);
     string line;
@@ -10,6 +11,7 @@ void SceneReader::loadScene(Scene& scene, const string& filepath) const {
     getline(file, line);
     cout << "[file reader] - Reading " << line << " objects from file..." << endl;
 
+    // read line by line from file
     while (getline(file, line)) {
         if (line == "camera")
             loadCamera(scene.camera, file);
@@ -22,6 +24,7 @@ void SceneReader::loadScene(Scene& scene, const string& filepath) const {
     }
 }
 
+/// Parse a camera line from a scene file
 void SceneReader::loadCamera(Camera& camera, std::ifstream& file) const {
     string pos; getline(file, pos);
     camera.position = parseVec3(pos);
@@ -36,6 +39,7 @@ void SceneReader::loadCamera(Camera& camera, std::ifstream& file) const {
     camera.aspect_ratio = parseFloat(a);
 }
 
+/// Parse a light line from a scene file
 void SceneReader::loadLight(vector<Light>& lights, std::ifstream& file) const {
     Light light;
     
@@ -48,6 +52,7 @@ void SceneReader::loadLight(vector<Light>& lights, std::ifstream& file) const {
     lights.push_back(light);
 }
 
+/// Parse a sphere line from a scene file
 void SceneReader::loadSphere(vector<SceneObject_s>& objects, std::ifstream& file) const {
     Sphere_s sphere = make_shared<Sphere>();
 
@@ -72,6 +77,7 @@ void SceneReader::loadSphere(vector<SceneObject_s>& objects, std::ifstream& file
     objects.push_back(sphere);
 }
 
+/// Parse a plane line from a scene file
 void SceneReader::loadPlane(vector<SceneObject_s>& objects, std::ifstream& file) const {
     Plane_s plane = make_shared<Plane>();
 
@@ -96,6 +102,7 @@ void SceneReader::loadPlane(vector<SceneObject_s>& objects, std::ifstream& file)
     objects.push_back(plane);
 }
 
+// parse a vec3 from a string with format 0, 0, 0 
 vec3 SceneReader::parseVec3(const string& line) const {
     std::stringstream ss(line);
     vector<string> tokens = vector<string>{string_it(ss), string_it{}};
@@ -103,6 +110,7 @@ vec3 SceneReader::parseVec3(const string& line) const {
     return vec3(stof(tokens[1]), stof(tokens[2]), stof(tokens[3]));
 }
 
+// parse a float from a string with format 0
 float SceneReader::parseFloat(const string& line) const {
     std::stringstream ss(line);
     vector<string> tokens = vector<string>{string_it(ss), string_it{}};
