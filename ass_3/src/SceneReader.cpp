@@ -8,7 +8,7 @@ void SceneReader::loadScene(Scene& scene, const string& filepath) const {
     string line;
     
     getline(file, line);
-    cout << "Reading " << line << " objects from file..." << endl;
+    cout << "[file reader] - Reading " << line << " objects from file..." << endl;
 
     while (getline(file, line)) {
         if (line == "camera")

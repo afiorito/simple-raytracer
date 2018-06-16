@@ -1,15 +1,18 @@
 #include <glm/gtc/type_ptr.hpp>
 #include "Helpers.h"
 #include <iostream>
+#include <chrono>
 #include "Path.h"
 #include "CImg.h"
 #include "SceneReader.h"
 using std::cout;
 using std::endl;
+using std::string;
 using glm::vec3;
 using cimg_library::CImg;
 using cimg_library::CImgDisplay;
-// #define DISPLAY
+
+typedef std::chrono::high_resolution_clock clk;
 
 struct Intersection {
     float t;
@@ -25,25 +28,31 @@ vec3 backgroundColor(const Ray&);
 
 int main(int argc, char* argv[]) {
 
-    std::string scene_name = "scene5";
+    string scene_name = "scene5";
+    bool draw_to_screen = false;
 
-    if (argc > 1)
-        scene_name = argv[1];
+    // user input
+    if (argc > 1) scene_name = argv[1];
+    if (argc > 2) draw_to_screen = true;
 
     Scene scene;
     SceneReader reader;
     reader.loadScene(scene, appendToSourcePath("/resources/scenes/" + scene_name + ".txt"));
 
+    cout << "[ray trace] - started image render." << endl;
+    auto start = clk::now();
     CImg<float> image(scene.width(), scene.height(), 1, 3, 0);
     render(image, scene);
+    std::chrono::duration<float> duration = clk::now() - start;
+    cout << "[ray trace] - completed image render in " << duration.count() << "s." << endl;
 
-    #ifdef DISPLAY
+    if (draw_to_screen) {
         CImgDisplay main_disp(image, "COMP 371 - Assignment 3");
 
         while(!main_disp.is_closed()) {
             main_disp.wait();
         }
-    #endif
+    }
 
     image.normalize(0, 255);
     image.save(appendToSourcePath("/resources/" + scene_name + ".bmp").c_str());
