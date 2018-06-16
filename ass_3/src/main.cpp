@@ -14,10 +14,6 @@ using glm::vec3;
 using cimg_library::CImg;
 using cimg_library::CImgDisplay;
 
-// MARK: DEFINES
-// Determines the number of samples for antialiasing
-// Set to 1 to disable antialiasing
-#define NUMBER_OF_SAMPLES 10
 typedef std::chrono::high_resolution_clock clk;
 
 // Container for storing ray intersection data
@@ -28,7 +24,7 @@ struct Intersection {
     Intersection(float t, SceneObject_s closest): t(t), closest(closest) {}
 };
 
-void render(CImg<float>&, const Scene&);
+void render(CImg<float>&, const Scene&, int);
 const Intersection intersect(const Ray&, const vector<SceneObject_s>&);
 vec3 color(const Ray&, const Intersection&, const Scene&);
 vec3 backgroundColor(const Ray&);
@@ -37,10 +33,14 @@ int main(int argc, char* argv[]) {
     // user input variables
     string scene_name = "scene5";
     bool draw_to_screen = false;
+    // Determines the number of samples for antialiasing
+    // Set to 1 to disable antialiasing
+    int number_of_samples = 1;
 
     // user input
     if (argc > 1) scene_name = argv[1];
-    if (argc > 2) draw_to_screen = true;
+    if (argc > 2) number_of_samples = std::stoi(argv[2]);
+    if (argc > 3) draw_to_screen = true;
 
     Scene scene;
     SceneReader reader;
@@ -51,7 +51,7 @@ int main(int argc, char* argv[]) {
     
     // Create a CImg image to store color values
     CImg<float> image(scene.width(), scene.height(), 1, 3, 0);
-    render(image, scene);
+    render(image, scene, number_of_samples);
     
     std::chrono::duration<float> duration = clk::now() - start;
     cout << "[ray trace] - completed image render in " << duration.count() << "s." << endl;
@@ -68,13 +68,14 @@ int main(int argc, char* argv[]) {
     // This is needed since CImg image stores float values
     // Need to convert from [0.0, 1.0] ==> [0, 255]
     image.normalize(0, 255);
-    image.save(appendToSourcePath("/resources/" + scene_name + ".bmp").c_str());
+    string basePath = "/resources/" + string((number_of_samples > 1 ? "antialiased/" : "aliased/"));
+    image.save(appendToSourcePath(basePath + scene_name + ".bmp").c_str());
 
     return 0;
 }
 
 /// render the raytraced image to CImg image
-void render(CImg<float>& image, const Scene& scene) {
+void render(CImg<float>& image, const Scene& scene, int number_of_samples) {
     // draw image from left -> right, top -> bottom
     Camera camera = scene.camera;
     float width = (float)scene.width(), height = (float)scene.height();
@@ -84,9 +85,9 @@ void render(CImg<float>& image, const Scene& scene) {
     for (int y = 0; y < scene.height(); y++) {
         for (int x = 0; x < scene.width(); x++) {
             vec3 accumulatedColor = vec3(0.0f);
-            for (int i = 0; i < NUMBER_OF_SAMPLES; i++) {
+            for (int i = 0; i < number_of_samples; i++) {
                 // if antialiasing is enabled, need to add offset to x and y values
-                float modifier = NUMBER_OF_SAMPLES > 1 ? drand48() : 0.0f; 
+                float modifier = number_of_samples > 1 ? drand48() : 0.0f; 
                 float xCoord = float(x + modifier) / width;
                 float yCoord = float(y + modifier) / height;
 
@@ -97,7 +98,7 @@ void render(CImg<float>& image, const Scene& scene) {
             }
 
             // take average from pixel samples
-            accumulatedColor /= float(NUMBER_OF_SAMPLES);
+            accumulatedColor /= float(number_of_samples);
 
             image.draw_point(x, y, glm::value_ptr(accumulatedColor));
         }
