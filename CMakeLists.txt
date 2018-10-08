@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.11)
-project(ass_3)
+project(simple-raytracer)
 
 # directories
 set(LIB_DIR ${CMAKE_CURRENT_SOURCE_DIR}/lib)

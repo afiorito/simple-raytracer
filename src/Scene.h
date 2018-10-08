@@ -1,5 +1,5 @@
-#ifndef ASS_3_SRC_SCENE_H_
-#define ASS_3_SRC_SCENE_H_
+#ifndef SRC_SCENE_H_
+#define SRC_SCENE_H_
 
 #include "Camera.h"
 #include "Light.h"

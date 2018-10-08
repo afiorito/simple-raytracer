@@ -1,5 +1,5 @@
-#ifndef ASS_3_SRC_CAMERA_H_
-#define ASS_3_SRC_CAMERA_H_
+#ifndef SRC_CAMERA_H_
+#define SRC_CAMERA_H_
 
 
 #include <glm/glm.hpp>

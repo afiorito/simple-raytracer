@@ -1,5 +1,5 @@
-#ifndef ASS_3_SRC_HELPERS_H_
-#define ASS_3_SRC_HELPERS_H_
+#ifndef SRC_HELPERS_H_
+#define SRC_HELPERS_H_
 
 #include <glm/glm.hpp>
 using glm::vec3;

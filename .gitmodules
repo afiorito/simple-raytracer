@@ -1,0 +1,6 @@
+[submodule "lib/CImg"]
+	path = lib/CImg
+	url = https://github.com/dtschump/CImg.git
+[submodule "lib/glm"]
+	path = lib/glm
+	url = https://github.com/g-truc/glm.git

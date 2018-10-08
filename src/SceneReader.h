@@ -1,5 +1,5 @@
-#ifndef ASS_3_SRC_SCENE_READER_H_
-#define ASS_3_SRC_SCENE_READER_H_
+#ifndef SRC_SCENE_READER_H_
+#define SRC_SCENE_READER_H_
 
 #include "Scene.h"
 #include "Sphere.h"

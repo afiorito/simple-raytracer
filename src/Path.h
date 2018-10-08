@@ -1,5 +1,5 @@
-#ifndef ASS_3_SRC_PATH_H_
-#define ASS_3_SRC_PATH_H_
+#ifndef SRC_PATH_H_
+#define SRC_PATH_H_
 
 #include <boost/filesystem.hpp>
 #include <boost/dll.hpp>

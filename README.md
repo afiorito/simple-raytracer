@@ -1,8 +1,6 @@
-# COMP 371 Assignment 3
+# Simple Raytracer
 
 ## Requirements
-All of the following requirements are met by the assignment:
-
 - [x] Loads a scene file
 - [x] Uniformly sends out rays from each pixel in the image plane
 - [x] Handles object intersections
@@ -31,7 +29,7 @@ The ray tracer is implemented using object oriented programming principles. The 
 
 ### Displaying the image
 
-Displaying the image is accomplished using the CImg library. In addition to displaying the image in a CImg window, the image is also saved to file at path `ass_3/src/resources`
+Displaying the image is accomplished using the CImg library. In addition to displaying the image in a CImg window, the image is also saved to file.
 
 ### Ray tracing
 
